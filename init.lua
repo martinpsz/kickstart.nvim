@@ -100,6 +100,7 @@ vim.g.have_nerd_font = false
 
 vim.o.shiftwidth = 4
 vim.o.tabstop = 4
+vim.o.softtabstop = 4
 vim.o.expandtab = true
 
 -- Make line numbers default
@@ -800,7 +801,6 @@ require('lazy').setup({
       --
       -- By default, we use the Lua implementation instead, but you may enable
       -- the rust implementation via `'prefer_rust_with_warning'`
-      --
       -- See :h blink-cmp-config-fuzzy for more information
       fuzzy = { implementation = 'lua' },
 
@@ -887,11 +887,9 @@ require('lazy').setup({
 
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
-    lazy = false,
     build = ':TSUpdate',
-    branch = 'main',
-    -- [[ Configure Treesitter ]] See `:help nvim-treesitter-intro`
     config = function()
+<<<<<<< Updated upstream
       -- ensure basic parser are installed
       local parsers = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' }
       require('nvim-treesitter').install(parsers)
@@ -921,10 +919,28 @@ require('lazy').setup({
       vim.api.nvim_create_autocmd('FileType', {
         callback = function(args)
           local buf, filetype = args.buf, args.match
+=======
+      require('nvim-treesitter').setup {
+        ensure_installed = {
+          'bash',
+          'c',
+          'diff',
+          'html',
+          'lua',
+          'luadoc',
+          'markdown',
+          'vim',
+          'vimdoc',
+          'rust',
+          'toml',
+          'go',
+          'kotlin',
+        },
+>>>>>>> Stashed changes
 
-          local language = vim.treesitter.language.get_lang(filetype)
-          if not language then return end
+        auto_install = true,
 
+<<<<<<< Updated upstream
           local installed_parsers = require('nvim-treesitter').get_installed 'parsers'
 
           if vim.tbl_contains(installed_parsers, language) then
@@ -939,6 +955,16 @@ require('lazy').setup({
           end
         end,
       })
+=======
+        highlight = {
+          enable = true,
+        },
+
+        indent = { enable = true },
+
+        -- install_dir = vim.fn.stdpath('data') .. '/site',
+      }
+>>>>>>> Stashed changes
     end,
   },
 
@@ -951,21 +977,12 @@ require('lazy').setup({
   --  Here are some example plugins that I've included in the Kickstart repository.
   --  Uncomment any of the lines below to enable them (you will need to restart nvim).
   --
-<<<<<<< Updated upstream
-  -- require 'kickstart.plugins.debug',
-  -- require 'kickstart.plugins.indent_line',
-  -- require 'kickstart.plugins.lint',
-  -- require 'kickstart.plugins.autopairs',
-  -- require 'kickstart.plugins.neo-tree',
-  -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommended keymaps
-=======
   require 'kickstart.plugins.debug',
   require 'kickstart.plugins.indent_line',
   require 'kickstart.plugins.lint',
   require 'kickstart.plugins.autopairs',
   require 'kickstart.plugins.neo-tree',
-  require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
->>>>>>> Stashed changes
+  require 'kickstart.plugins.gitsigns',
 
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
   --    This is the easiest way to modularize your config.
@@ -998,6 +1015,20 @@ require('lazy').setup({
     },
   },
 })
+
+-- Force Fix for Autocomplete & Tabs
+vim.schedule(function()
+  local ok, cmp = pcall(require, 'cmp')
+  if ok then
+    cmp.setup {
+      completion = { completeopt = 'menu,menuone,noinsert' },
+      mapping = cmp.mapping.preset.insert {
+        ['<CR>'] = cmp.mapping.confirm { select = true },
+        ['<Tab>'] = cmp.mapping.select_next_item(),
+      },
+    }
+  end
+end)
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
